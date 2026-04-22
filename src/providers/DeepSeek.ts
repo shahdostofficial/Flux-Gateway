@@ -1,4 +1,5 @@
 import { BaseProvider } from './BaseProvider.js';
+import { ModelInfo } from '../types.js';
 
 export class DeepSeekProvider extends BaseProvider {
   readonly name = 'DeepSeek';
@@ -8,7 +9,10 @@ export class DeepSeekProvider extends BaseProvider {
     super();
   }
 
-  getFallbackModels(): string[] {
-    return ['deepseek-chat', 'deepseek-reasoner'];
+  listModels(): ModelInfo[] {
+    return [
+      { id: 'deepseek-chat', capabilities: ['text'] },
+      { id: 'deepseek-reasoner', capabilities: ['text'] },
+    ];
   }
 }

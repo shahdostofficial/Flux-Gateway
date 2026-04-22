@@ -1,4 +1,5 @@
 import { BaseProvider } from './BaseProvider.js';
+import { ModelInfo } from '../types.js';
 
 export class GroqProvider extends BaseProvider {
   readonly name = 'Groq';
@@ -8,13 +9,12 @@ export class GroqProvider extends BaseProvider {
     super();
   }
 
-  getFallbackModels(): string[] {
-    // Ordered fastest / most-reliable → slowest / least-available.
+  listModels(): ModelInfo[] {
     return [
-      'llama-3.1-8b-instant',
-      'llama-3.3-70b-versatile',
-      'meta-llama/llama-4-scout-17b-16e-instruct',
-      'qwen/qwen3-32b',
+      { id: 'llama-3.1-8b-instant', capabilities: ['text'] },
+      { id: 'llama-3.3-70b-versatile', capabilities: ['text'] },
+      { id: 'meta-llama/llama-4-scout-17b-16e-instruct', capabilities: ['text'] },
+      { id: 'qwen/qwen3-32b', capabilities: ['text'] },
     ];
   }
 }

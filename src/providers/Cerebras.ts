@@ -1,9 +1,9 @@
 import { BaseProvider } from './BaseProvider.js';
+import { ModelInfo } from '../types.js';
 
 /**
  * Cerebras Cloud — OpenAI-compatible gateway to Llama / Qwen open models.
- * Extremely fast inference, generous free tier.
- * Sign up at https://cloud.cerebras.ai/ to get a free API key.
+ * Extremely fast inference.
  */
 export class CerebrasProvider extends BaseProvider {
   readonly name = 'Cerebras';
@@ -13,7 +13,11 @@ export class CerebrasProvider extends BaseProvider {
     super();
   }
 
-  getFallbackModels(): string[] {
-    return ['llama3.1-8b', 'qwen-3-235b-a22b-instruct-2507', 'llama-3.3-70b'];
+  listModels(): ModelInfo[] {
+    return [
+      { id: 'llama3.1-8b', capabilities: ['text'] },
+      { id: 'qwen-3-235b-a22b-instruct-2507', capabilities: ['text'] },
+      { id: 'llama-3.3-70b', capabilities: ['text'] },
+    ];
   }
 }

@@ -1,9 +1,9 @@
 import { BaseProvider } from './BaseProvider.js';
+import { ModelInfo } from '../types.js';
 
 /**
  * SambaNova Cloud — OpenAI-compatible gateway to Llama 3.1 (8B/70B/405B),
- * DeepSeek, Qwen and other open models. Has a free developer tier.
- * Sign up at https://cloud.sambanova.ai/ to get a free API key.
+ * DeepSeek, Qwen and other open models.
  */
 export class SambaNovaProvider extends BaseProvider {
   readonly name = 'SambaNova';
@@ -13,11 +13,11 @@ export class SambaNovaProvider extends BaseProvider {
     super();
   }
 
-  getFallbackModels(): string[] {
+  listModels(): ModelInfo[] {
     return [
-      'Meta-Llama-3.3-70B-Instruct',
-      'Meta-Llama-3.1-8B-Instruct',
-      'Llama-3.3-Swallow-70B-Instruct-v0.4',
+      { id: 'Meta-Llama-3.3-70B-Instruct', capabilities: ['text'] },
+      { id: 'Meta-Llama-3.1-8B-Instruct', capabilities: ['text'] },
+      { id: 'Llama-3.3-Swallow-70B-Instruct-v0.4', capabilities: ['text'] },
     ];
   }
 }

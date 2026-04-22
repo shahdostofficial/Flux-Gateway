@@ -14,3 +14,4 @@ export * from './providers/SambaNova.js';
 export * from './providers/Pollinations.js';
 export * from './providers/CloudflareWorkersAI.js';
 export { realEnv } from './utils/env.js';
+export * from './SessionManager.js';

@@ -15,6 +15,7 @@ import { SambaNovaProvider } from './providers/SambaNova.js';
 import { PollinationsProvider } from './providers/Pollinations.js';
 import { CloudflareWorkersAIProvider } from './providers/CloudflareWorkersAI.js';
 import { realEnv } from './utils/env.js';
+import { Provider } from './types.js';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -24,15 +25,16 @@ const program = new Command();
 program
   .name('flux-gateway')
   .description('A universal AI request switcher for continuous LLM access')
-  .version('1.1.0');
+  .version('1.2.0');
 
 program
   .command('ask')
   .description('Send a prompt to the AI rotation gateway')
   .argument('<prompt>', 'The prompt to send')
   .option('-m, --model <model>', 'Specific model for supported providers')
+  .option('-i, --image <url>', 'Image URL for multimodal requests')
   .action(async (prompt, options) => {
-    const providers = [];
+    const providers: Provider[] = [];
     
     // Add providers if keys exist in env
     const openrouter = realEnv('OPENROUTER_API_KEY');    if (openrouter)   providers.push(new OpenRouterProvider(openrouter));
@@ -55,12 +57,6 @@ program
       providers.push(new CloudflareWorkersAIProvider(cfAccount, cfKey));
     }
 
-    // Pollinations policy:
-    //   - It's NOT production-grade (community-run, no SLA).
-    //   - But it's the only provider that needs no API key.
-    //   - So: include it only as a true last resort — either when the user
-    //     has configured no other provider at all, or when they opt in
-    //     explicitly via FLUX_ENABLE_POLLINATIONS=1.
     const pollinationsOptIn = process.env.FLUX_ENABLE_POLLINATIONS === '1';
     if (pollinationsOptIn || providers.length === 0) {
       providers.push(new PollinationsProvider());
@@ -76,29 +72,70 @@ program
 
     if (providers.length === 0) {
       console.error(chalk.red('Error: No providers available.'));
-      console.log('Set at least one *_API_KEY in .env, or set FLUX_ENABLE_POLLINATIONS=1.');
       process.exit(1);
     }
 
-    // Silent by default: no internal logger. Set FLUX_DEBUG=1 to see rotation
-    // logs (useful when debugging why a provider failed).
     const debug = process.env.FLUX_DEBUG === '1';
     const switcher = new ChatSwitcher({
       providers,
-      logger: debug ? console : null,
+      onEvent: debug ? (e) => {
+        if (e.type === 'attempt_start') console.error(chalk.dim(`[Gateway] Trying ${e.provider} (${e.model})...`));
+        if (e.type === 'attempt_failure') console.error(chalk.yellow(`[Gateway] ${e.provider} failed: ${e.failureClass} - ${e.error}`));
+        if (e.type === 'attempt_success') console.error(chalk.green(`[Gateway] Success with ${e.provider} in ${e.duration}ms`));
+        if (e.type === 'cooldown_triggered') console.error(chalk.red(`[Gateway] ${e.provider} entered cooldown until ${new Date(e.until).toLocaleTimeString()}`));
+      } : undefined
     });
 
     try {
-      const result = await switcher.chat(
-        [{ role: 'user', content: prompt }],
-        { model: options.model }
-      );
-      // Only print the answer. We intentionally do NOT expose which provider
-      // or model produced it — that is an internal implementation detail.
+      const messages: any[] = [];
+      if (options.image) {
+        messages.push({
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt },
+            { type: 'image', source: { kind: 'url', url: options.image } }
+          ]
+        });
+      } else {
+        messages.push({ role: 'user', content: prompt });
+      }
+
+      const result = await switcher.chat(messages, { model: options.model });
       console.log(result.content);
     } catch (error: any) {
-      // Generic user-facing error — no provider names leaked.
-      console.error(chalk.red('Error:'), 'Unable to get a response right now. Please try again.');
+      console.error(chalk.red('Error:'), 'Unable to get a response right now.');
+      if (debug) console.error(error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('generate')
+  .description('Generate an image using a prompt')
+  .argument('<prompt>', 'The prompt for image generation')
+  .option('-m, --model <model>', 'Specific model for generation (e.g., flux)')
+  .action(async (prompt, options) => {
+    const providers: Provider[] = [];
+    
+    const openrouter = realEnv('OPENROUTER_API_KEY');    if (openrouter)   providers.push(new OpenRouterProvider(openrouter));
+    providers.push(new PollinationsProvider()); // Always available for image gen
+
+    const debug = process.env.FLUX_DEBUG === '1';
+    const switcher = new ChatSwitcher({
+      providers,
+      onEvent: debug ? (e) => {
+        if (e.type === 'attempt_start') console.error(chalk.dim(`[Gateway] Generating with ${e.provider}...`));
+        if (e.type === 'attempt_failure') console.error(chalk.yellow(`[Gateway] ${e.provider} failed: ${e.error}`));
+      } : undefined
+    });
+
+    try {
+      const result = await switcher.generateImage(prompt, { model: options.model });
+      console.log(chalk.green('Image Generated Successfully!'));
+      console.log(chalk.bold('URL:'), result.url);
+      console.log(chalk.dim(`Provider: ${result.provider}`));
+    } catch (error: any) {
+      console.error(chalk.red('Error:'), 'Failed to generate image.');
       if (debug) console.error(error.message);
       process.exit(1);
     }

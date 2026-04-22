@@ -1,4 +1,5 @@
 import { BaseProvider } from './BaseProvider.js';
+import { ModelInfo } from '../types.js';
 
 export class ShuttleAIProvider extends BaseProvider {
   readonly name = 'ShuttleAI';
@@ -8,7 +9,11 @@ export class ShuttleAIProvider extends BaseProvider {
     super();
   }
 
-  getFallbackModels(): string[] {
-    return ['shuttle-2', 'shuttle-2-turbo', 'gpt-4o-mini'];
+  listModels(): ModelInfo[] {
+    return [
+      { id: 'shuttle-2', capabilities: ['text'] },
+      { id: 'shuttle-2-turbo', capabilities: ['text'] },
+      { id: 'gpt-4o-mini', capabilities: ['text'] },
+    ];
   }
 }

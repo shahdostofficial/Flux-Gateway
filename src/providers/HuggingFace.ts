@@ -1,26 +1,64 @@
 import axios from 'axios';
-import { Message, ChatOptions, Provider } from '../types.js';
+import {
+  Message,
+  ChatOptions,
+  Provider,
+  ModelInfo,
+  Capability,
+} from '../types.js';
 
 export class HuggingFaceProvider implements Provider {
   readonly name = 'HuggingFace';
-  
-  constructor(private apiKey: string, private model: string = 'mistralai/Mistral-7B-Instruct-v0.2') {}
+
+  constructor(
+    private apiKey: string,
+    private model: string = 'mistralai/Mistral-7B-Instruct-v0.2'
+  ) {}
+
+  listModels(): ModelInfo[] {
+    return [
+      { id: 'mistralai/Mistral-7B-Instruct-v0.2', capabilities: ['text'] },
+      { id: 'meta-llama/Meta-Llama-3-8B-Instruct', capabilities: ['text'] },
+      { id: 'microsoft/Phi-3-mini-4k-instruct', capabilities: ['text'] },
+      { id: 'google/gemma-2b-it', capabilities: ['text'] },
+    ];
+  }
+
+  supports(cap: Capability): boolean {
+    return cap === 'text';
+  }
 
   async complete(messages: Message[], options: ChatOptions): Promise<string> {
     const model = options.model || this.model;
     const apiUrl = `https://api-inference.huggingface.co/models/${model}`;
-    
-    // HF expects a simple prompt string or its own format. 
-    // We'll convert messages to a simple string for models that expect instructions.
-    const prompt = messages.map(m => `[${m.role}]: ${m.content}`).join('\n') + '\n[assistant]:';
+
+    // Helper to extract text from possible ContentPart[]
+    const getMessageText = (content: string | any[]): string => {
+      if (typeof content === 'string') return content;
+      return content
+        .filter((c) => c.type === 'text')
+        .map((c) => c.text)
+        .join('\n');
+    };
+
+    const prompt =
+      messages
+        .map((m) => `[${m.role}]: ${getMessageText(m.content)}`)
+        .join('\n') + '\n[assistant]:';
 
     try {
       const response = await axios.post(
         apiUrl,
-        { inputs: prompt, parameters: { max_new_tokens: options.max_tokens || 512, temperature: options.temperature || 0.7 } },
+        {
+          inputs: prompt,
+          parameters: {
+            max_new_tokens: options.max_tokens || 512,
+            temperature: options.temperature || 0.7,
+          },
+        },
         {
           headers: {
-            'Authorization': `Bearer ${this.apiKey}`,
+            Authorization: `Bearer ${this.apiKey}`,
             'Content-Type': 'application/json',
           },
           timeout: 45000,
@@ -28,14 +66,13 @@ export class HuggingFaceProvider implements Provider {
       );
 
       if (Array.isArray(response.data) && response.data[0]?.generated_text) {
-        // Cleaning up the response to get only the assistant part
         let text = response.data[0].generated_text as string;
         if (text.includes('[assistant]:')) {
           text = text.split('[assistant]:').pop()?.trim() || text;
         }
         return text;
       }
-      
+
       throw new Error('Invalid response from HuggingFace');
     } catch (error: any) {
       const status = error.response?.status;

@@ -1,4 +1,5 @@
 import { BaseProvider } from './BaseProvider.js';
+import { ModelInfo } from '../types.js';
 
 export class OpenRouterProvider extends BaseProvider {
   readonly name = 'OpenRouter';
@@ -8,18 +9,16 @@ export class OpenRouterProvider extends BaseProvider {
     super();
   }
 
-  getFallbackModels(): string[] {
-    // Curated list of currently-live OpenRouter free models, verified Apr 2026.
-    // OpenRouter frequently rotates/decommissions :free models, and the global
-    // free-tier rate limit per model is hit often — so we keep a long tail.
+  listModels(): ModelInfo[] {
     return [
-      'openai/gpt-oss-20b:free',
-      'openai/gpt-oss-120b:free',
-      'nvidia/nemotron-nano-9b-v2:free',
-      'google/gemma-3-4b-it:free',
-      'google/gemma-3n-e4b-it:free',
-      'qwen/qwen3-coder:free',
-      'liquid/lfm-2.5-1.2b-instruct:free',
+      { id: 'openai/gpt-oss-20b:free', capabilities: ['text'] },
+      { id: 'openai/gpt-oss-120b:free', capabilities: ['text'] },
+      { id: 'nvidia/nemotron-nano-9b-v2:free', capabilities: ['text'] },
+      { id: 'google/gemma-3-4b-it:free', capabilities: ['text'] },
+      { id: 'google/gemma-3n-e4b-it:free', capabilities: ['text'] },
+      { id: 'qwen/qwen3-coder:free', capabilities: ['text'] },
+      { id: 'liquid/lfm-2.5-1.2b-instruct:free', capabilities: ['text'] },
+      { id: 'qwen/qwen2-vl-7b-instruct:free', capabilities: ['text', 'image_input'] },
     ];
   }
 
@@ -30,6 +29,3 @@ export class OpenRouterProvider extends BaseProvider {
     };
   }
 }
-
-/** @deprecated Misspelled alias. Use `OpenRouterProvider` instead. */
-export const OpenRouterProvier = OpenRouterProvider;

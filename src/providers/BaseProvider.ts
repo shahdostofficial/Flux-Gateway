@@ -1,63 +1,73 @@
 import axios from 'axios';
-import { Message, ChatOptions, Provider } from '../types.js';
+import {
+  Message,
+  ChatOptions,
+  Provider,
+  Capability,
+  ModelInfo,
+  FailureClass,
+} from '../types.js';
 
 /**
  * Base class for OpenAI-compatible chat providers.
- *
- * Smart model fallback:
- *   Each provider exposes `getFallbackModels()` returning an ordered list of
- *   model IDs. `complete()` walks the list and, on a *model-specific* error
- *   (429 rate limit, 404 not found, 400 bad model), transparently moves on
- *   to the next model. Non-model errors (401 auth, network, 5xx, timeout)
- *   bubble up immediately so the `ChatSwitcher` can try another provider.
  */
 export abstract class BaseProvider implements Provider {
   abstract readonly name: string;
   protected abstract apiUrl: string;
   protected abstract apiKey: string;
 
-  /** Preferred default model (first entry of `getFallbackModels`). */
-  getDefaultModel(): string {
-    return this.getFallbackModels()[0];
+  /**
+   * Subclasses should define their supported models and capabilities.
+   */
+  abstract listModels(): ModelInfo[];
+
+  supports(cap: Capability): boolean {
+    return this.listModels().some((m) => m.capabilities.includes(cap));
   }
 
-  /**
-   * Ordered list of models to try for this provider.
-   * The first entry is the preferred default; subsequent entries are tried
-   * only on model-specific failures. Subclasses should override this.
-   */
-  getFallbackModels(): string[] {
-    return [];
+  protected getFallbackModels(): string[] {
+    return this.listModels().map((m) => m.id);
   }
 
   protected async getAdditionalHeaders(): Promise<Record<string, string>> {
     return {};
   }
 
-  /** Error codes/patterns that indicate the MODEL (not the provider) failed. */
-  protected isModelSpecificError(err: any): boolean {
-    const status: number | undefined = err?.response?.status;
-    if (status === 429) return true; // rate-limited on this model
-    if (status === 404) return true; // model decommissioned / unknown
-    if (status === 400) {
-      // Some providers return 400 for "invalid model" — inspect message.
-      const msg = String(
-        err?.response?.data?.error?.message ?? err?.response?.data ?? ''
-      ).toLowerCase();
-      if (msg.includes('model')) return true;
+  /**
+   * Classifies an error into a FailureClass for smart routing.
+   */
+  protected classifyError(err: any): FailureClass {
+    const status: number = err?.response?.status;
+    const data = err?.response?.data;
+    const msg = String(data?.error?.message ?? data ?? '').toLowerCase();
+
+    if (status === 401 || status === 403) return 'auth_error';
+    if (status === 402) return 'quota_exhausted';
+    if (status === 429) return 'rate_limit';
+    if (status >= 500) return 'server_error';
+    if (err.code === 'ECONNABORTED' || err.code === 'ENOTFOUND')
+      return 'network_error';
+
+    // Model-specific 400 errors (invalid model, context length, etc.)
+    if (status === 400 || status === 404) {
+      if (msg.includes('model') || msg.includes('found') || msg.includes('parameter')) {
+        return 'model_error';
+      }
+      if (msg.includes('policy') || msg.includes('safety') || msg.includes('refusal')) {
+        return 'content_policy';
+      }
     }
-    return false;
+
+    return 'model_error'; // Default to model error to trigger fallback
   }
 
   async complete(messages: Message[], options: ChatOptions): Promise<string> {
-    // If caller explicitly picked a model, honour it exclusively.
-    // Otherwise walk the provider's full fallback list.
     const candidates =
       options.model != null ? [options.model] : this.getFallbackModels();
 
     if (candidates.length === 0) {
       throw new Error(
-        `${this.name}: no models configured. Override getFallbackModels().`
+        `${this.name}: no models configured. Override listModels().`
       );
     }
 
@@ -68,15 +78,18 @@ export abstract class BaseProvider implements Provider {
         return await this.callModel(model, messages, options);
       } catch (err: any) {
         lastError = err;
-        if (i < candidates.length - 1 && this.isModelSpecificError(err)) {
-          // Silent hop to next model; ChatSwitcher will still log if the
-          // whole provider ultimately fails.
+        const failureClass = this.classifyError(err);
+
+        // If it's a model-specific error and we have more candidates, try next.
+        if (i < candidates.length - 1 && failureClass === 'model_error') {
           continue;
         }
-        throw this.wrapError(err);
+
+        // Otherwise, bubble it up to Switcher
+        throw this.wrapError(err, failureClass);
       }
     }
-    throw this.wrapError(lastError);
+    throw this.wrapError(lastError, this.classifyError(lastError));
   }
 
   protected async callModel(
@@ -109,12 +122,13 @@ export abstract class BaseProvider implements Provider {
     return choice.message.content;
   }
 
-  protected wrapError(err: any): Error {
-    if (err?.response) {
-      const message =
-        err.response.data?.error?.message ?? err.response.statusText;
-      return new Error(`${this.name} Error (${err.response.status}): ${message}`);
-    }
-    return err instanceof Error ? err : new Error(String(err));
+  protected wrapError(err: any, failureClass: FailureClass): Error & { failureClass?: FailureClass } {
+    const message = err?.response?.data?.error?.message ?? err?.response?.statusText ?? err.message;
+    const extendedError: any = new Error(
+      `${this.name} Error (${err?.response?.status ?? 'Native'}): ${message}`
+    );
+    extendedError.failureClass = failureClass;
+    extendedError.originalError = err;
+    return extendedError;
   }
 }

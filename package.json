@@ -1,6 +1,6 @@
 {
   "name": "flux-gateway",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "An open-source AI request switcher and universal gateway for continuous AI access.",
   "type": "module",
   "main": "dist/index.js",

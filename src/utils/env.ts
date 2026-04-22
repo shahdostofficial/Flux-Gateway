@@ -1,3 +1,4 @@
+/// <reference types="node" />
 /**
  * Returns the env var value only if it looks like a real, non-placeholder key.
  * `.env.example` uses strings like `your_openrouter_key_here`, and if the user

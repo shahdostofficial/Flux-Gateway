@@ -6,12 +6,13 @@
 
 ---
 
-## ✨ Features
+## ✨ Features (v1.2.0)
 
 - 🔄 **Auto-Rotation**: Seamlessly switch to the next provider on failure or rate limit.
-- 🌍 **Multi-Provider Support**: Built-in support for OpenRouter, Groq, TogetherAI, and Meridian Blue.
-- 📦 **Minimalist**: Tiny footprint, easy to integrate into any Node.js project.
-- 🛡️ **Reliability**: Designed for production uptime.
+- 🖼️ **Multimodal Support**: Send images together with text prompts (vision-capable models).
+- 🧠 **Capability-Aware Routing**: Automatically filters providers based on request needs (text vs image).
+- 🛡️ **Error Taxonomy**: Smart cooldowns (e.g., long cooldown for dead keys, short for rate limits).
+- 📊 **Production Telemetry**: Event emitter pattern for monitoring attempts, successes, and failures.
 - 🔌 **Extensible**: Easily add your own custom providers.
 
 ---
@@ -24,115 +25,96 @@
 npm install flux-gateway
 ```
 
-### Usage
+### Usage (Text + Image)
 
 ```typescript
-import {
-  ChatSwitcher,
-  OpenRouterProvider,
-  GroqProvider
-} from 'flux-gateway';
+import { ChatSwitcher, OpenRouterProvider, GroqProvider } from 'flux-gateway';
 
-const providers = [
-  new OpenRouterProvider('YOUR_OPENROUTER_KEY'),
-  new GroqProvider('YOUR_GROQ_KEY')
-];
-
-const switcher = new ChatSwitcher({ providers, retryCount: 1 });
+const switcher = new ChatSwitcher({
+  providers: [
+    new OpenRouterProvider('YOUR_OPENROUTER_KEY'),
+    new GroqProvider('YOUR_GROQ_KEY')
+  ],
+  onEvent: (e) => console.log(`[GW] ${e.type}: ${e.provider}`) // Telemetry
+});
 
 const response = await switcher.chat([
-  { role: 'user', content: 'What is the speed of light?' }
+  {
+    role: 'user',
+    content: [
+      { type: 'text', text: 'What is in this image?' },
+      { type: 'image', source: { kind: 'url', url: 'https://example.com/cat.jpg' } }
+    ]
+  }
 ]);
 
-console.log(`Answer from ${response.provider}:`, response.content);
+console.log(`Answer:`, response.content);
 ```
 
 ### CLI
 
-FluxGateway also ships with a `flux-gateway` CLI. Create a `.env` file (see `.env.example`) with any keys you own, then:
+ FluxGateway also ships with a `flux-gateway` CLI.
 
 ```bash
-npx flux-gateway ask "Explain quantum entanglement in one sentence."
-npx flux-gateway ask "Write a haiku about TypeScript" -m llama3-70b-8192
+# Basic prompt
+npx flux-gateway ask "Explain relativity"
+
+# Vision prompt
+npx flux-gateway ask "What is this?" --image "https://example.com/cat.jpg"
+
+# Debug mode (sees rotation logs)
+FLUX_DEBUG=1 npx flux-gateway ask "Hi"
 ```
 
 ---
 
 ## 🛠 Supported Providers
 
-| Provider | Class | Default Model |
+| Provider | Class | Capabilities |
 | :--- | :--- | :--- |
-| OpenRouter | `OpenRouterProvider` | `meta-llama/llama-3.2-3b-instruct:free` |
-| Groq | `GroqProvider` | `llama-3.1-8b-instant` |
-| TogetherAI | `TogetherProvider` | `mistralai/Mistral-7B-Instruct-v0.1` |
-| DeepSeek | `DeepSeekProvider` | `deepseek-chat` |
-| HuggingFace | `HuggingFaceProvider` | `mistralai/Mistral-7B-Instruct-v0.2` |
-| ShuttleAI | `ShuttleAIProvider` | `shuttle-2` |
-| DeepInfra | `DeepInfraProvider` | `meta-llama/Meta-Llama-3-8B-Instruct` |
-| **Cerebras** ⚡ | `CerebrasProvider` | `llama3.1-8b` |
-| **SambaNova** ⚡ | `SambaNovaProvider` | `Meta-Llama-3.3-70B-Instruct` |
-| **Cloudflare Workers AI** ⚡ | `CloudflareWorkersAIProvider` | `@cf/meta/llama-3.1-8b-instruct` |
-| **Pollinations** 🆓 | `PollinationsProvider` | `openai` *(no API key required)* |
+| OpenRouter | `OpenRouterProvider` | `text`, `image_input` |
+| Groq | `GroqProvider` | `text` |
+| TogetherAI | `TogetherProvider` | `text` |
+| DeepSeek | `DeepSeekProvider` | `text` |
+| HuggingFace | `HuggingFaceProvider` | `text` |
+| ShuttleAI | `ShuttleAIProvider` | `text` |
+| DeepInfra | `DeepInfraProvider` | `text` |
+| **Cerebras** | `CerebrasProvider` | `text` |
+| **SambaNova** | `SambaNovaProvider` | `text` |
+| **Cloudflare** | `CloudflareWorkersAIProvider` | `text` |
+| **Pollinations** | `PollinationsProvider` | `text`, `image_input` |
 
-> **⚡ = gateway aggregator** (one key gives access to many open models).
-> **🆓 Pollinations** needs **no API key** — community-run, no SLA. Use as a last-resort fallback, not a primary provider.
->
-> Need another provider? Extend `BaseProvider` — it handles the OpenAI-compatible request/response shape for you.
+---
 
-## 🧠 Smart failover (v1.1+)
+## 🧠 Smart Failover (Production-Grade)
 
-`ChatSwitcher` tracks per-provider health automatically:
+`ChatSwitcher` tracks per-provider health with an intelligent error taxonomy:
 
-- On repeated failures (default: **3 in a row**), a provider enters a cooldown (default: **60s**) and is skipped.
-- Any successful call resets that provider's failure counter.
-- `switcher.getHealth()` returns a snapshot for diagnostics.
-- `switcher.resetHealth()` clears all cooldowns.
+- **Auth Errors**: Dead keys trigger a **30-minute cooldown**.
+- **Rate Limits**: Trigger a short **10-second cooldown**.
+- **Server Errors**: Standard **60-second cooldown**.
+- **Task Blindness**: If a provider doesn't support a capability (e.g. vision), it is **pre-filtered** out of the rotation entirely for that request.
+
+### Telemetry & Observability
+
+Use the `onEvent` callback to pipe metrics to your logging system:
 
 ```typescript
 const switcher = new ChatSwitcher({
   providers: [...],
-  retryCount: 1,
-  failureThreshold: 3,   // 3 consecutive failures → cooldown (0 disables)
-  cooldownMs: 60_000,    // 60s cooldown
-  logger: console,       // or `null` to silence
+  onEvent: (event) => {
+    if (event.type === 'attempt_failure') {
+      metrics.increment('ai_gateway_fail', { provider: event.provider, class: event.failureClass });
+    }
+  }
 });
 ```
-
-### Recommended production stack
-
-```typescript
-import {
-  ChatSwitcher,
-  GroqProvider,
-  CerebrasProvider,
-  OpenRouterProvider,
-  CloudflareWorkersAIProvider,
-  SambaNovaProvider,
-} from 'flux-gateway';
-
-const switcher = new ChatSwitcher({
-  providers: [
-    new GroqProvider(process.env.GROQ_API_KEY!),                  // primary: fast + high free limits
-    new CerebrasProvider(process.env.CEREBRAS_API_KEY!),          // fast backup
-    new OpenRouterProvider(process.env.OPENROUTER_API_KEY!),      // widest model catalog
-    new CloudflareWorkersAIProvider(                              // edge-hosted, reliable
-      process.env.CLOUDFLARE_ACCOUNT_ID!,
-      process.env.CLOUDFLARE_API_KEY!,
-    ),
-    new SambaNovaProvider(process.env.SAMBANOVA_API_KEY!),        // large models fallback
-  ],
-  failureThreshold: 3,
-  cooldownMs: 60_000,
-});
-```
-
-> Need zero-config local dev? Add `new PollinationsProvider()` at the end — works with no API key, but don't rely on it in production (community-run, no SLA).
 
 ---
 
 ## 🎨 Why FluxGateway?
 
-In a world where free tiers are limited and APIs can be unstable, **FluxGateway** acts as a "Universal Gateway for Universal Gateways." It abstracts the complexity of multiple API formats into a single, reliable stream.
+In a world where free tiers are limited and APIs can be unstable, **FluxGateway** acts as a "Universal Gateway for Universal Gateways." It abstracts the complexity of multiple API formats and failure modes into a single, reliable stream that **guarantees** a response if at least one path is alive.
 
 ---
 
