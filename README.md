@@ -12,6 +12,7 @@
 - 🖼️ **Multimodal Support**: Send images together with text prompts (vision-capable models).
 - 🧠 **Capability-Aware Routing**: Automatically filters providers based on request needs (text vs image).
 - 🛡️ **Error Taxonomy**: Smart cooldowns (e.g., long cooldown for dead keys, short for rate limits).
+- 💭 **Stateful Memory**: Built-in session management with pluggable storage adapters (Redis, DB, InMemory).
 - 📊 **Production Telemetry**: Event emitter pattern for monitoring attempts, successes, and failures.
 - 🔌 **Extensible**: Easily add your own custom providers.
 
@@ -51,6 +52,34 @@ const response = await switcher.chat([
 console.log(`Answer:`, response.content);
 ```
 
+### Usage (Conversational Memory)
+
+FluxGateway provides a built-in `SessionManager` to handle multi-turn conversational history. It comes with an `InMemoryStore` by default, but you can implement `SessionStore` to plug in your own Redis, Postgres, or MongoDB adapter.
+
+```typescript
+import { ChatSwitcher, SessionManager, InMemoryStore, OpenRouterProvider } from 'flux-gateway';
+
+const switcher = new ChatSwitcher({
+  providers: [new OpenRouterProvider('YOUR_OPENROUTER_KEY')]
+});
+
+// Initialize session manager with a choice of storage adapter
+const manager = new SessionManager(switcher, new InMemoryStore());
+
+// Get a session tied to a specific user or chat ID
+const session = manager.getSession('user_123', {
+  systemPrompt: 'You are a helpful AI assistant.',
+  maxHistory: 10 // Keeps last 10 messages to save context window
+});
+
+// The session remembers previous interactions automatically
+const reply1 = await session.ask('Hi, my name is Alice!');
+console.log(reply1.content);
+
+const reply2 = await session.ask('What is my name?');
+console.log(reply2.content); // Output: "Your name is Alice!"
+```
+
 ### CLI
 
  FluxGateway also ships with a `flux-gateway` CLI.
@@ -83,6 +112,7 @@ FLUX_DEBUG=1 npx flux-gateway ask "Hi"
 | **SambaNova** | `SambaNovaProvider` | `text` |
 | **Cloudflare** | `CloudflareWorkersAIProvider` | `text` |
 | **Pollinations** | `PollinationsProvider` | `text`, `image_input` |
+| **Meridian Blue** | `MeridianBlueProvider` | `text` |
 
 ---
 
