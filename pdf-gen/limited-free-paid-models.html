@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Flux Gateway — Limited Free &amp; Paid Models</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#1a1a2e;padding:40px 50px;font-size:11px}
+.header{text-align:center;margin-bottom:30px;padding-bottom:20px;border-bottom:3px solid #7c3aed}
+.header h1{font-size:24px;color:#7c3aed;margin-bottom:4px}
+.header p{font-size:13px;color:#555}
+.badge-limited{display:inline-block;background:#f59e0b;color:#fff;padding:2px 10px;border-radius:10px;font-size:9px;font-weight:700}
+.badge-paid{display:inline-block;background:#dc2626;color:#fff;padding:2px 10px;border-radius:10px;font-size:9px;font-weight:700}
+.badge-inactive{display:inline-block;background:#94a3b8;color:#fff;padding:2px 10px;border-radius:10px;font-size:9px;font-weight:700}
+.note-box{background:#faf5ff;border-left:4px solid #7c3aed;padding:10px 14px;margin-bottom:20px;font-size:11px;border-radius:0 6px 6px 0}
+.note-box strong{color:#7c3aed}
+.note-free{background:#fffbeb;border-left:4px solid #f59e0b;padding:8px 14px;margin-top:4px;margin-bottom:10px;font-size:10px;border-radius:0 6px 6px 0;color:#92400e}
+.provider-section{margin-bottom:22px}
+.provider-title{font-size:16px;font-weight:700;color:#0f172a;margin-bottom:2px;display:flex;align-items:center;gap:8px}
+.provider-title .prov-badge{background:#e2e8f0;color:#334155;padding:2px 8px;border-radius:6px;font-size:9px;font-weight:600}
+table{width:100%;border-collapse:collapse;margin-bottom:6px}
+th{background:#0f172a;color:#fff;text-align:left;padding:6px 10px;font-size:10px}
+td{padding:5px 10px;border-bottom:1px solid #e2e8f0;font-size:10px}
+tr:nth-child(even){background:#f8fafc}
+.cost{font-weight:600;color:#7c3aed}
+.cost-high{font-weight:700;color:#dc2626}
+.section-divider{border:none;border-top:2px dashed #cbd5e1;margin:24px 0}
+.inactive-header{font-size:14px;color:#64748b;font-weight:700;margin:16px 0 6px;display:flex;align-items:center;gap:8px}
+.tier-label{font-size:12px;font-weight:700;margin:18px 0 8px;padding:6px 14px;border-radius:6px;display:inline-block}
+.tier-limited{background:#fef3c7;color:#92400e;border:1px solid #fbbf24}
+.tier-paid{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+.footer{text-align:center;margin-top:30px;padding-top:14px;border-top:2px solid #e2e8f0;font-size:9px;color:#94a3b8}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>💎 Flux Gateway — Limited Free &amp; Paid Models</h1>
+  <p>Models with per-token costs. "Limited Free" have low costs; "Paid" have higher rates.</p>
+  <p style="margin-top:4px;font-size:10px;color:#94a3b8">Generated on April 27, 2026</p>
+</div>
+
+<div class="note-box">
+  <strong>📌 Note:</strong> Limited Free models have small per-token costs but are generally affordable for most use cases. Paid models carry higher per-token pricing. Both tiers are grouped here together.
+</div>
+
+<!-- ===================== LIMITED FREE SECTION ===================== -->
+<div class="tier-label tier-limited">📙 LIMITED FREE TIER</div>
+
+<!-- GEMINI -->
+<div class="provider-section">
+  <div class="provider-title">Gemini <span class="prov-badge">2 limited-free · 1 paid</span></div>
+  <div class="note-free">⚠️ Gemini also has 1 <strong>Paid</strong> model (gemini-2.5-pro) listed below in the Paid section.</div>
+  <table>
+    <tr><th>Model</th><th>Provider Model</th><th>I/O Type</th><th>Input/1K</th><th>Output/1K</th><th>Tier</th></tr>
+    <tr><td>gemini-2.5-flash</td><td>gemini-2.5-flash</td><td>text → text</td><td class="cost">$0.00015</td><td class="cost">$0.0006</td><td><span class="badge-limited">Limited Free</span></td></tr>
+    <tr><td>gemini-2.5-flash-lite</td><td>gemini-2.5-flash-lite</td><td>text → text</td><td class="cost">$0.000075</td><td class="cost">$0.0003</td><td><span class="badge-limited">Limited Free</span></td></tr>
+  </table>
+</div>
+
+<!-- GROQ -->
+<div class="provider-section">
+  <div class="provider-title">Groq <span class="prov-badge">4 active · 2 inactive</span></div>
+  <table>
+    <tr><th>Model</th><th>Provider Model</th><th>I/O Type</th><th>Input/1K</th><th>Output/1K</th><th>Tier</th></tr>
+    <tr><td>llama-3.1-8b</td><td>llama-3.1-8b-instant</td><td>text → text</td><td class="cost">$0.00005</td><td class="cost">$0.00008</td><td><span class="badge-limited">Limited Free</span></td></tr>
+    <tr><td>llama-3.3-70b</td><td>llama-3.3-70b-versatile</td><td>text → text</td><td class="cost">$0.00059</td><td class="cost">$0.00079</td><td><span class="badge-limited">Limited Free</span></td></tr>
+    <tr><td>llama-4-scout</td><td>meta-llama/llama-4-scout-17b-16e-instruct</td><td>text → text</td><td class="cost">$0.00015</td><td class="cost">$0.00029</td><td><span class="badge-limited">Limited Free</span></td></tr>
+    <tr><td>qwen3-32b</td><td>qwen/qwen3-32b</td><td>text → text</td><td class="cost">$0.00029</td><td class="cost">$0.00039</td><td><span class="badge-limited">Limited Free</span></td></tr>
+  </table>
+  <div class="inactive-header">Inactive <span class="badge-inactive">INACTIVE</span></div>
+  <table>
+    <tr><th>Model</th><th>Provider Model</th><th>Input/1K</th><th>Output/1K</th></tr>
+    <tr><td>whisper-large-v3</td><td>whisper-large-v3</td><td class="cost">$0.00011</td><td>$0</td></tr>
+    <tr><td>whisper-large-v3-turbo</td><td>whisper-large-v3-turbo</td><td class="cost">$0.00004</td><td>$0</td></tr>
+  </table>
+</div>
+
+<!-- MISTRAL (Limited Free) -->
+<div class="provider-section">
+  <div class="provider-title">Mistral <span class="prov-badge">5 active · 4 inactive</span></div>
+  <div class="note-free">⚠️ Mistral also has 1 completely <strong>Free</strong> model (pixtral-12b) — see the Free Models PDF.</div>
+  <table>
+    <tr><th>Model</th><th>Provider Model</th><th>I/O Type</th><th>Input/1K</th><th>Output/1K</th><th>Tier</th></tr>
+    <tr><td>magistral-small</td><td>magistral-small-2509</td><td>text → text</td><td class="cost">$0.0001</td><td class="cost">$0.0003</td><td><span class="badge-limited">Limited Free</span></td></tr>
+    <tr><td>mistral-embed</td><td>mistral-embed-2312</td><td>text → text</td><td class="cost">$0.0001</td><td>$0</td><td><span class="badge-limited">Limited Free</span></td></tr>
+    <tr><td>mistral-large</td><td>mistral-large-2512</td><td>text → text</td><td class="cost">$0.002</td><td class="cost">$0.006</td><td><span class="badge-limited">Limited Free</span></td></tr>
+    <tr><td>mistral-medium</td><td>mistral-medium-2508</td><td>text → text</td><td class="cost">$0.0004</td><td class="cost">$0.002</td><td><span class="badge-limited">Limited Free</span></td></tr>
+    <tr><td>mistral-small</td><td>mistral-small-2603</td><td>text → text</td><td class="cost">$0.0001</td><td class="cost">$0.0003</td><td><span class="badge-limited">Limited Free</span></td></tr>
+  </table>
+  <div class="inactive-header">Inactive <span class="badge-inactive">INACTIVE</span></div>
+  <table>
+    <tr><th>Model</th><th>Provider Model</th><th>Input/1K</th><th>Output/1K</th></tr>
+    <tr><td>devstral</td><td>devstral-2-2512</td><td class="cost">$0.0003</td><td class="cost">$0.001</td></tr>
+    <tr><td>ministral-3b</td><td>ministral-3-3b-2512</td><td class="cost">$0.00004</td><td class="cost">$0.00004</td></tr>
+    <tr><td>ministral-8b</td><td>ministral-3-8b-2512</td><td class="cost">$0.0001</td><td class="cost">$0.0001</td></tr>
+    <tr><td>mistral-moderation</td><td>mistral-moderation-2603</td><td class="cost">$0.0001</td><td>$0</td></tr>
+  </table>
+</div>
+
+<hr class="section-divider">
+
+<!-- ===================== PAID SECTION ===================== -->
+<div class="tier-label tier-paid">📕 PAID TIER</div>
+
+<!-- GEMINI PAID -->
+<div class="provider-section">
+  <div class="provider-title">Gemini <span class="prov-badge">0 active · 1 inactive (paid)</span></div>
+  <div class="inactive-header">Inactive <span class="badge-inactive">INACTIVE</span></div>
+  <table>
+    <tr><th>Model</th><th>Provider Model</th><th>I/O Type</th><th>Input/1K</th><th>Output/1K</th><th>Tier</th></tr>
+    <tr><td>gemini-2.5-pro</td><td>gemini-2.5-pro</td><td>text → text</td><td class="cost-high">$0.00125</td><td class="cost-high">$0.01</td><td><span class="badge-paid">Paid</span></td></tr>
+  </table>
+</div>
+
+<hr class="section-divider">
+
+<!-- SUMMARY TABLE -->
+<div class="provider-section">
+  <div class="provider-title" style="font-size:14px;color:#7c3aed">📊 Cross-Tier Provider Summary</div>
+  <table style="margin-top:8px">
+    <tr><th>Provider</th><th>Free Models</th><th>Limited Free Models</th><th>Paid Models</th><th>Note</th></tr>
+    <tr><td><strong>Cerebras</strong></td><td>2</td><td>0</td><td>0</td><td>Fully free</td></tr>
+    <tr><td><strong>Cloudflare</strong></td><td>1 (+2 inactive)</td><td>0</td><td>0</td><td>Fully free</td></tr>
+    <tr><td><strong>Gemini</strong></td><td>0</td><td>2</td><td>1 (inactive)</td><td>Mixed tiers</td></tr>
+    <tr><td><strong>GitHub</strong></td><td>1 (+1 inactive)</td><td>0</td><td>0</td><td>Fully free</td></tr>
+    <tr><td><strong>Groq</strong></td><td>0</td><td>4 (+2 inactive)</td><td>0</td><td>Limited free only</td></tr>
+    <tr><td><strong>Mistral</strong></td><td>1</td><td>5 (+4 inactive)</td><td>0</td><td>Both free &amp; limited</td></tr>
+    <tr><td><strong>NVIDIA</strong></td><td>22 (+21 inactive)</td><td>0</td><td>0</td><td>Fully free</td></tr>
+    <tr><td><strong>OpenRouter</strong></td><td>0 (+5 inactive)</td><td>0</td><td>0</td><td>All inactive free</td></tr>
+  </table>
+</div>
+
+<div class="footer">
+  Flux Gateway · Model Catalog · Limited Free &amp; Paid Tier · Page generated April 27, 2026
+</div>
+
+</body>
+</html>

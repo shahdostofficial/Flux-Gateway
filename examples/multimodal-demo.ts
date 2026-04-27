@@ -32,10 +32,13 @@ async function runDemo() {
   });
 
   console.log('--- 🧪 Scenario 1: Vision (Image Input/Uploading) ---');
-  // We use a sample image URL (a kitten)
-  const imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg';
+  // Using Pixabay CDN — Wikipedia blocks server-side fetches from some providers (403)
+  const imageUrl = 'https://cdn.pixabay.com/photo/2024/02/28/07/42/european-shorthair-8601492_640.jpg';
 
   try {
+    // Let the switcher auto-select a vision-capable provider.
+    // OpenRouter has free vision models (gemma-3/4, nemotron-vl).
+    // If no specific model is set, the switcher picks the first vision-capable model.
     const chatResult = await switcher.chat([
       {
         role: 'user',
@@ -44,9 +47,10 @@ async function runDemo() {
           { type: 'image', source: { kind: 'url', url: imageUrl } }
         ]
       }
-    ], { model: 'p1' }); // p1 is pollination's vision model
+    ]);
 
     console.log('Vision Response:', chatResult.content);
+    console.log('Provider used:', chatResult.provider, '| Model:', chatResult.model);
   } catch (err: any) {
     console.error('Vision Failed:', err.message);
   }

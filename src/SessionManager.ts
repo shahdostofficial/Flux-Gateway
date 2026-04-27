@@ -45,7 +45,7 @@ export class ChatSession {
   /**
    * Send a message in this session context.
    */
-  async ask(prompt: string, options: ChatOptions = {}): Promise<ChatResult> {
+  async ask(content: string | import('./types.js').ContentPart[], options: ChatOptions = {}): Promise<ChatResult> {
     // 1. Get history from store
     let history = (await this.store.get(this.sessionId)) || [];
     
@@ -55,7 +55,7 @@ export class ChatSession {
     }
 
     // 2. Append user message
-    history.push({ role: 'user', content: prompt });
+    history.push({ role: 'user', content });
 
     // 3. Truncate if history exceeds limit
     const limit = this.options.maxHistory ?? 20;

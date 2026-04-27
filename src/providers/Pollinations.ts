@@ -22,12 +22,12 @@ export class PollinationsProvider implements Provider {
   }
 
   listModels(): ModelInfo[] {
+    // Pollinations API currently only serves openai-fast (GPT-OSS 20B).
+    // Old models (p1, mistral, llama) have been retired from their API.
     return [
-      { id: 'openai', capabilities: ['text'] },
-      { id: 'mistral', capabilities: ['text'] },
-      { id: 'llama', capabilities: ['text'] },
-      { id: 'p1', capabilities: ['text', 'image_input'] },
-      { id: 'flux', capabilities: ['image_output'] },
+      { id: 'openai-fast', capabilities: ['text'] },
+      { id: 'openai', capabilities: ['text'] },      // alias for openai-fast
+      { id: 'flux', capabilities: ['image_output'] },  // image generation still works
     ];
   }
 
@@ -35,13 +35,48 @@ export class PollinationsProvider implements Provider {
     return this.listModels().some((m) => m.capabilities.includes(cap));
   }
 
+  /**
+   * Auto-select the best model for the request.
+   * If the request contains images, prefer a vision-capable model.
+   */
+  private selectModel(messages: Message[]): string {
+    const hasImage = messages.some(m =>
+      Array.isArray(m.content) && m.content.some((c: any) => c.type === 'image')
+    );
+    // p1 supports vision; openai-fast is the default text model
+    return hasImage ? 'p1' : 'openai-fast';
+  }
+
   async complete(messages: Message[], options: ChatOptions): Promise<string> {
     try {
+      // Translate internal ContentPart format → OpenAI-compatible format
+      const translatedMessages = messages.map((msg) => {
+        if (typeof msg.content === 'string') return msg;
+
+        const parts = (msg.content as any[]).map((part: any) => {
+          if (part.type === 'text') return part;
+          if (part.type === 'image') {
+            let url: string;
+            if (part.source.kind === 'url') {
+              url = part.source.url;
+            } else if (part.source.kind === 'base64') {
+              url = `data:${part.source.mime};base64,${part.source.data}`;
+            } else {
+              return { type: 'text', text: '[unsupported image format]' };
+            }
+            return { type: 'image_url', image_url: { url } };
+          }
+          return part;
+        });
+
+        return { role: msg.role, content: parts };
+      });
+
       const response = await axios.post(
         this.apiUrl,
         {
-          model: options.model || 'openai',
-          messages,
+          model: options.model || this.selectModel(messages),
+          messages: translatedMessages,
           temperature: options.temperature ?? 0.7,
           max_tokens: options.max_tokens,
         },
