@@ -10,7 +10,7 @@ export class MeridianBlueProvider extends BaseProvider {
   readonly name = 'MeridianBlue';
   protected apiUrl: string;
 
-  constructor(protected apiKey: string, baseUrl = 'http://178.63.197.107:3000') {
+  constructor(protected apiKey: string, baseUrl = 'http://localhost:3000') {
     super();
     this.apiUrl = `${baseUrl.replace(/\/$/, '')}/api/v1/chat/completions`;
   }
@@ -30,6 +30,8 @@ export class MeridianBlueProvider extends BaseProvider {
       { id: 'mistral-small', capabilities: ['text'] },
       { id: 'magistral-small', capabilities: ['text'] },
       { id: 'github-gpt-4o', capabilities: ['text'] },
+      { id: 'pixtral-12b', capabilities: ['text', 'image_input'] },
+      { id: 'phi-4-multimodal-instruct', capabilities: ['text', 'image_input'] },
     ];
   }
 }

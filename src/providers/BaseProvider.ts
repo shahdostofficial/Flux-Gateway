@@ -6,6 +6,7 @@ import {
   Capability,
   ModelInfo,
   FailureClass,
+  ContentPart,
 } from '../types.js';
 
 /**
@@ -31,6 +32,58 @@ export abstract class BaseProvider implements Provider {
 
   protected async getAdditionalHeaders(): Promise<Record<string, string>> {
     return {};
+  }
+
+  /**
+   * Translates Flux-Gateway's internal ContentPart format into the
+   * OpenAI-compatible format that upstream providers actually accept.
+   *
+   * Internal:  { type: 'image', source: { kind: 'url', url: '...' } }
+   * OpenAI:    { type: 'image_url', image_url: { url: '...' } }
+   *
+   * Internal:  { type: 'image', source: { kind: 'base64', data: '...', mime: '...' } }
+   * OpenAI:    { type: 'image_url', image_url: { url: 'data:<mime>;base64,<data>' } }
+   *
+   * Subclasses can override this if they use a non-OpenAI multimodal format.
+   */
+  protected translateMessages(messages: Message[]): any[] {
+    return messages.map((msg) => {
+      // Plain text messages pass through unchanged
+      if (typeof msg.content === 'string') {
+        return msg;
+      }
+
+      // Translate each ContentPart
+      const translatedParts = (msg.content as ContentPart[]).map((part) => {
+        if (part.type === 'text') {
+          return part; // text parts are already correct
+        }
+
+        if (part.type === 'image') {
+          // Convert to OpenAI image_url format
+          let imageUrl: string;
+
+          if (part.source.kind === 'url') {
+            imageUrl = part.source.url;
+          } else if (part.source.kind === 'base64') {
+            imageUrl = `data:${part.source.mime};base64,${part.source.data}`;
+          } else {
+            // Unknown source kind — skip gracefully
+            return { type: 'text', text: '[unsupported image format]' };
+          }
+
+          return {
+            type: 'image_url',
+            image_url: { url: imageUrl },
+          };
+        }
+
+        // Unknown part type — pass through as-is
+        return part;
+      });
+
+      return { role: msg.role, content: translatedParts };
+    });
   }
 
   /**
@@ -62,8 +115,24 @@ export abstract class BaseProvider implements Provider {
   }
 
   async complete(messages: Message[], options: ChatOptions): Promise<string> {
-    const candidates =
+    let candidates =
       options.model != null ? [options.model] : this.getFallbackModels();
+
+    // If the request contains images and no specific model was requested,
+    // prioritize vision-capable models first so the image is actually analyzed.
+    if (options.model == null) {
+      const hasImage = messages.some(m =>
+        Array.isArray(m.content) && m.content.some((c: any) => c.type === 'image')
+      );
+      if (hasImage) {
+        const visionModels = this.listModels()
+          .filter(m => m.capabilities.includes('image_input'))
+          .map(m => m.id);
+        const textOnlyModels = candidates.filter(c => !visionModels.includes(c));
+        // Vision models first, text-only as fallback
+        candidates = [...visionModels, ...textOnlyModels];
+      }
+    }
 
     if (candidates.length === 0) {
       throw new Error(
@@ -97,11 +166,14 @@ export abstract class BaseProvider implements Provider {
     messages: Message[],
     options: ChatOptions
   ): Promise<string> {
+    // Translate internal format → provider-compatible format
+    const translatedMessages = this.translateMessages(messages);
+
     const response = await axios.post(
       this.apiUrl,
       {
         model,
-        messages,
+        messages: translatedMessages,
         temperature: options.temperature ?? 0.7,
         max_tokens: options.max_tokens,
       },

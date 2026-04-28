@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Flux Gateway — Free Models</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#1a1a2e;padding:40px 50px;font-size:11px}
+.header{text-align:center;margin-bottom:30px;padding-bottom:20px;border-bottom:3px solid #0d9488}
+.header h1{font-size:26px;color:#0d9488;margin-bottom:4px}
+.header p{font-size:13px;color:#555}
+.badge-free{display:inline-block;background:#0d9488;color:#fff;padding:2px 10px;border-radius:10px;font-size:9px;font-weight:700;vertical-align:middle}
+.badge-inactive{display:inline-block;background:#94a3b8;color:#fff;padding:2px 10px;border-radius:10px;font-size:9px;font-weight:700;vertical-align:middle}
+.note-box{background:#f0fdfa;border-left:4px solid #0d9488;padding:10px 14px;margin-bottom:20px;font-size:11px;border-radius:0 6px 6px 0}
+.note-box strong{color:#0d9488}
+.provider-section{margin-bottom:22px}
+.provider-title{font-size:16px;font-weight:700;color:#0f172a;margin-bottom:2px;display:flex;align-items:center;gap:8px}
+.provider-title .prov-badge{background:#e2e8f0;color:#334155;padding:2px 8px;border-radius:6px;font-size:9px;font-weight:600}
+.provider-subtitle{font-size:10px;color:#64748b;margin-bottom:6px}
+table{width:100%;border-collapse:collapse;margin-bottom:6px}
+th{background:#0f172a;color:#fff;text-align:left;padding:6px 10px;font-size:10px}
+td{padding:5px 10px;border-bottom:1px solid #e2e8f0;font-size:10px}
+tr:nth-child(even){background:#f8fafc}
+.section-divider{border:none;border-top:2px dashed #cbd5e1;margin:24px 0}
+.inactive-header{font-size:14px;color:#64748b;font-weight:700;margin:16px 0 6px;display:flex;align-items:center;gap:8px}
+.footer{text-align:center;margin-top:30px;padding-top:14px;border-top:2px solid #e2e8f0;font-size:9px;color:#94a3b8}
+.has-limited{background:#fffbeb;border:1px solid #fbbf24;border-radius:6px;padding:6px 10px;margin-top:4px;font-size:10px;color:#92400e}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🚀 Flux Gateway — Free Models</h1>
+  <p>All models listed below are completely free (Input &amp; Output cost = $0)</p>
+  <p style="margin-top:4px;font-size:10px;color:#94a3b8">Generated on April 27, 2026</p>
+</div>
+
+<div class="note-box">
+  <strong>⚡ Providers with both Free &amp; Limited-Free tiers:</strong> Mistral and Groq offer some models completely free and others as "Limited Free" (with small per-token costs). See the Limited-Free &amp; Paid PDF for those models.
+</div>
+
+<!-- CEREBRAS -->
+<div class="provider-section">
+  <div class="provider-title">Cerebras <span class="prov-badge">2 models</span></div>
+  <table>
+    <tr><th>Model</th><th>Provider Model</th><th>I/O Type</th><th>Input/1K</th><th>Output/1K</th></tr>
+    <tr><td>cerebras-llama3-8b</td><td>llama3.1-8b</td><td>text → text</td><td>$0</td><td>$0</td></tr>
+    <tr><td>cerebras-qwen3-235b</td><td>qwen-3-235b-a22b-instruct-2507</td><td>text → text</td><td>$0</td><td>$0</td></tr>
+  </table>
+</div>
+
+<!-- CLOUDFLARE -->
+<div class="provider-section">
+  <div class="provider-title">Cloudflare <span class="prov-badge">1 active · 2 inactive</span></div>
+  <table>
+    <tr><th>Model</th><th>Provider Model</th><th>I/O Type</th><th>Input/1K</th><th>Output/1K</th></tr>
+    <tr><td>cf-llama-3.3-70b</td><td>@cf/meta/llama-3.3-70b-instruct-fp8-fast</td><td>text → text</td><td>$0</td><td>$0</td></tr>
+  </table>
+  <div class="inactive-header">Inactive <span class="badge-inactive">INACTIVE</span></div>
+  <table>
+    <tr><th>Model</th><th>Provider Model</th><th>I/O Type</th></tr>
+    <tr><td>cf-llama-3.2-11b-vision</td><td>@cf/meta/llama-3.2-11b-vision-instruct</td><td>text → text</td></tr>
+    <tr><td>cf-whisper-turbo</td><td>@cf/openai/whisper-large-v3-turbo</td><td>text → text</td></tr>
+  </table>
+</div>
+
+<!-- GITHUB -->
+<div class="provider-section">
+  <div class="provider-title">GitHub <span class="prov-badge">1 active · 1 inactive</span></div>
+  <table>
+    <tr><th>Model</th><th>Provider Model</th><th>I/O Type</th><th>Input/1K</th><th>Output/1K</th></tr>
+    <tr><td>github-gpt-4o</td><td>openai/gpt-4o</td><td>text → text</td><td>$0</td><td>$0</td></tr>
+  </table>
+  <div class="inactive-header">Inactive <span class="badge-inactive">INACTIVE</span></div>
+  <table>
+    <tr><th>Model</th><th>Provider Model</th><th>I/O Type</th></tr>
+    <tr><td>github-llama-3.3-70b</td><td>meta/meta-llama-3.3-70b-instruct</td><td>text → text</td></tr>
+  </table>
+</div>
+
+<!-- MISTRAL (Free only) -->
+<div class="provider-section">
+  <div class="provider-title">Mistral <span class="prov-badge">1 free model</span></div>
+  <div class="has-limited">⚠️ Mistral also has 5 active + 4 inactive Limited-Free models — see the Limited-Free &amp; Paid PDF.</div>
+  <table style="margin-top:6px">
+    <tr><th>Model</th><th>Provider Model</th><th>I/O Type</th><th>Input/1K</th><th>Output/1K</th></tr>
+    <tr><td>pixtral-12b</td><td>pixtral-12b-2409</td><td>text → text</td><td>$0</td><td>$0</td></tr>
+  </table>
+</div>
+
+<!-- NVIDIA -->
+<div class="provider-section">
+  <div class="provider-title">NVIDIA <span class="prov-badge">22 active · 21 inactive</span></div>
+  <table>
+    <tr><th>Model</th><th>Provider Model</th><th>Input/1K</th><th>Output/1K</th></tr>
+    <tr><td>devstral-2-123b-instruct-2512</td><td>mistralai/devstral-2-123b-instruct-2512</td><td>$0</td><td>$0</td></tr>
+    <tr><td>gemma-2-2b-it</td><td>google/gemma-2-2b-it</td><td>$0</td><td>$0</td></tr>
+    <tr><td>gemma-3-27b-it</td><td>google/gemma-3-27b-it</td><td>$0</td><td>$0</td></tr>
+    <tr><td>gemma-3n-e2b-it</td><td>google/gemma-3n-e2b-it</td><td>$0</td><td>$0</td></tr>
+    <tr><td>gemma-3n-e4b-it</td><td>google/gemma-3n-e4b-it</td><td>$0</td><td>$0</td></tr>
+    <tr><td>gliner-pii</td><td>nvidia/gliner-pii</td><td>$0</td><td>$0</td></tr>
+    <tr><td>kimi-k2-instruct</td><td>moonshotai/kimi-k2-instruct</td><td>$0</td><td>$0</td></tr>
+    <tr><td>kimi-k2-instruct-0905</td><td>moonshotai/kimi-k2-instruct-0905</td><td>$0</td><td>$0</td></tr>
+    <tr><td>llama-3.1-nemotron-safety-guard-8b-v3</td><td>nvidia/llama-3.1-nemotron-safety-guard-8b-v3</td><td>$0</td><td>$0</td></tr>
+    <tr><td>llama-4-maverick-17b-128e-instruct</td><td>meta/llama-4-maverick-17b-128e-instruct</td><td>$0</td><td>$0</td></tr>
+    <tr><td>llama-guard-4-12b</td><td>meta/llama-guard-4-12b</td><td>$0</td><td>$0</td></tr>
+    <tr><td>magistral-small-2506</td><td>mistralai/magistral-small-2506</td><td>$0</td><td>$0</td></tr>
+    <tr><td>mistral-large-3-675b-instruct-2512</td><td>mistralai/mistral-large-3-675b-instruct-2512</td><td>$0</td><td>$0</td></tr>
+    <tr><td>mistral-medium-3-instruct</td><td>mistralai/mistral-medium-3-instruct</td><td>$0</td><td>$0</td></tr>
+    <tr><td>nemotron-3-content-safety</td><td>nvidia/nemotron-3-content-safety</td><td>$0</td><td>$0</td></tr>
+    <tr><td>nemotron-content-safety-reasoning-4b</td><td>nvidia/nemotron-content-safety-reasoning-4b</td><td>$0</td><td>$0</td></tr>
+    <tr><td>nemotron-mini-4b-instruct</td><td>nvidia/nemotron-mini-4b-instruct</td><td>$0</td><td>$0</td></tr>
+    <tr><td>nv-embed-v1</td><td>nvidia/nv-embed-v1</td><td>$0</td><td>$0</td></tr>
+    <tr><td>phi-4-multimodal-instruct</td><td>microsoft/phi-4-multimodal-instruct</td><td>$0</td><td>$0</td></tr>
+    <tr><td>qwen3-coder-480b-a35b-instruct</td><td>qwen/qwen3-coder-480b-a35b-instruct</td><td>$0</td><td>$0</td></tr>
+    <tr><td>solar-10.7b-instruct</td><td>upstage/solar-10.7b-instruct</td><td>$0</td><td>$0</td></tr>
+    <tr><td>step-3.5-flash</td><td>stepfun-ai/step-3.5-flash</td><td>$0</td><td>$0</td></tr>
+  </table>
+  <div class="inactive-header">Inactive NVIDIA <span class="badge-inactive">INACTIVE</span></div>
+  <table>
+    <tr><th>Model</th><th>Provider Model</th></tr>
+    <tr><td>active-speaker-detection</td><td>nvidia/active-speaker-detection</td></tr>
+    <tr><td>bevformer</td><td>nvidia/bevformer</td></tr>
+    <tr><td>cosmos-predict1-5b</td><td>nvidia/cosmos-predict1-5b</td></tr>
+    <tr><td>cosmos-transfer1-7b</td><td>nvidia/cosmos-transfer1-7b</td></tr>
+    <tr><td>cosmos-transfer2.5-2b</td><td>nvidia/cosmos-transfer2.5-2b</td></tr>
+    <tr><td>deepseek-v3.1-terminus</td><td>deepseek-ai/deepseek-v3.1-terminus</td></tr>
+    <tr><td>deepseek-v3.2</td><td>deepseek-ai/deepseek-v3.2</td></tr>
+    <tr><td>dracarys-llama-3.1-70b-instruct</td><td>abacus-ai/dracarys-llama-3.1-70b-instruct</td></tr>
+    <tr><td>esm2-650m</td><td>meta/esm2-650m</td></tr>
+    <tr><td>esmfold</td><td>meta/esmfold</td></tr>
+    <tr><td>kimi-k2-thinking</td><td>moonshotai/kimi-k2-thinking</td></tr>
+    <tr><td>llama-3.2-nemoretriever-300m-embed-v1</td><td>nvidia/llama-3.2-nemoretriever-300m-embed-v1</td></tr>
+    <tr><td>magpie-tts-zeroshot</td><td>nvidia/magpie-tts-zeroshot</td></tr>
+    <tr><td>minimax-m2.7</td><td>minimaxai/minimax-m2.7</td></tr>
+    <tr><td>mistral-nemotron</td><td>mistralai/mistral-nemotron</td></tr>
+    <tr><td>nemotron-voicechat</td><td>nvidia/nemotron-voicechat</td></tr>
+    <tr><td>nv-embedcode-7b-v1</td><td>nvidia/nv-embedcode-7b-v1</td></tr>
+    <tr><td>rerank-qa-mistral-4b</td><td>nvidia/rerank-qa-mistral-4b</td></tr>
+    <tr><td>riva-translate-4b-instruct-v1_1</td><td>nvidia/riva-translate-4b-instruct-v1_1</td></tr>
+    <tr><td>seed-oss-36b-instruct</td><td>bytedance/seed-oss-36b-instruct</td></tr>
+    <tr><td>sparsedrive</td><td>nvidia/sparsedrive</td></tr>
+    <tr><td>studiovoice</td><td>nvidia/studiovoice</td></tr>
+    <tr><td>synthetic-video-detector</td><td>nvidia/synthetic-video-detector</td></tr>
+    <tr><td>usdcode</td><td>nvidia/usdcode</td></tr>
+    <tr><td>usdvalidate</td><td>nvidia/usdvalidate</td></tr>
+  </table>
+</div>
+
+<!-- OPENROUTER -->
+<div class="provider-section">
+  <div class="provider-title">OpenRouter <span class="prov-badge">0 active · 5 inactive</span></div>
+  <div class="inactive-header">Inactive <span class="badge-inactive">INACTIVE</span></div>
+  <table>
+    <tr><th>Model</th><th>Provider Model</th></tr>
+    <tr><td>deepseek-r1-free</td><td>deepseek/deepseek-r1:free</td></tr>
+    <tr><td>gemma-4-31b-free</td><td>google/gemma-4-31b-it:free</td></tr>
+    <tr><td>llama-3.3-70b-free</td><td>meta-llama/llama-3.3-70b-instruct:free</td></tr>
+    <tr><td>llama-4-maverick-free</td><td>meta-llama/llama-4-maverick:free</td></tr>
+    <tr><td>qwen3-235b-free</td><td>qwen/qwen3-235b-a22b:free</td></tr>
+  </table>
+</div>
+
+<div class="footer">
+  Flux Gateway · Model Catalog · Free Tier · Page generated April 27, 2026
+</div>
+
+</body>
+</html>

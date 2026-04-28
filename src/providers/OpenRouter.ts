@@ -19,6 +19,12 @@ export class OpenRouterProvider extends BaseProvider {
       { id: 'qwen/qwen3-coder:free', capabilities: ['text'] },
       { id: 'liquid/lfm-2.5-1.2b-instruct:free', capabilities: ['text'] },
       { id: 'qwen/qwen2-vl-7b-instruct:free', capabilities: ['text', 'image_input'] },
+      // Active free vision models
+      { id: 'google/gemma-3-12b-it:free', capabilities: ['text', 'image_input'] },
+      { id: 'google/gemma-3-27b-it:free', capabilities: ['text', 'image_input'] },
+      { id: 'google/gemma-4-26b-a4b-it:free', capabilities: ['text', 'image_input'] },
+      { id: 'google/gemma-4-31b-it:free', capabilities: ['text', 'image_input'] },
+      { id: 'nvidia/nemotron-nano-12b-v2-vl:free', capabilities: ['text', 'image_input'] },
     ];
   }
 
